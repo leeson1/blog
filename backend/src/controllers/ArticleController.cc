@@ -1,205 +1,157 @@
 #include "ArticleController.h"
-#include "../utils/CsvHelper.h"
 #include "../utils/AuthManager.h"
 #include <drogon/HttpResponse.h>
+#include <drogon/orm/DbClient.h>
 #include <json/json.h>
-#include <mutex>
-#include <chrono>
-#include <ctime>
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
-
-extern std::string g_dataDir;
-
-static std::mutex g_articlesMutex;
 
 std::optional<UserInfo> ArticleController::getAuthUser(const drogon::HttpRequestPtr& req) {
     auto auth = req->getHeader("Authorization");
     if (auth.size() < 7 || auth.substr(0, 7) != "Bearer ") return std::nullopt;
-    std::string token = auth.substr(7);
     UserInfo user;
-    if (!AuthManager::instance().validateToken(token, user)) return std::nullopt;
+    if (!AuthManager::instance().validateToken(auth.substr(7), user)) return std::nullopt;
     return user;
-}
-
-static std::string getCurrentTimestamp() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm tm_info;
-    gmtime_r(&t, &tm_info);
-    std::ostringstream oss;
-    oss << std::put_time(&tm_info, "%Y-%m-%d %H:%M:%S");
-    return oss.str();
 }
 
 void ArticleController::getArticles(const drogon::HttpRequestPtr& req,
                                      std::function<void(const drogon::HttpResponsePtr&)>&& callback) {
-    std::lock_guard<std::mutex> lock(g_articlesMutex);
-    auto rows = CsvHelper::readCsv(g_dataDir + "/articles.csv");
+    auto cb = std::make_shared<std::function<void(const drogon::HttpResponsePtr&)>>(std::move(callback));
+    auto db = drogon::app().getDbClient();
 
-    Json::Value result(Json::arrayValue);
-    // rows[0] is header: id,user_id,username,title,content,created_at
-    for (size_t i = 1; i < rows.size(); i++) {
-        const auto& row = rows[i];
-        if (row.size() < 6) continue;
-        Json::Value article;
-        article["id"] = std::stoi(row[0]);
-        article["user_id"] = std::stoi(row[1]);
-        article["username"] = row[2];
-        article["title"] = row[3];
-        // No content in list
-        article["created_at"] = row[5];
-        result.append(article);
-    }
-
-    // Sort by id descending (newest first)
-    // Json::Value doesn't have sort, build a vector
-    std::vector<Json::Value> articles;
-    for (const auto& a : result) {
-        articles.push_back(a);
-    }
-    std::sort(articles.begin(), articles.end(), [](const Json::Value& a, const Json::Value& b) {
-        return a["id"].asInt() > b["id"].asInt();
-    });
-
-    Json::Value sorted(Json::arrayValue);
-    for (const auto& a : articles) {
-        sorted.append(a);
-    }
-
-    auto resp = drogon::HttpResponse::newHttpJsonResponse(sorted);
-    callback(resp);
+    db->execSqlAsync(
+        "SELECT id, user_id, username, title, created_at FROM articles ORDER BY id DESC",
+        [cb](const drogon::orm::Result& r) {
+            Json::Value result(Json::arrayValue);
+            for (const auto& row : r) {
+                Json::Value article;
+                article["id"] = row["id"].as<int>();
+                article["user_id"] = row["user_id"].as<int>();
+                article["username"] = row["username"].as<std::string>();
+                article["title"] = row["title"].as<std::string>();
+                article["created_at"] = row["created_at"].as<std::string>();
+                result.append(article);
+            }
+            (*cb)(drogon::HttpResponse::newHttpJsonResponse(result));
+        },
+        [cb](const drogon::orm::DrogonDbException& e) {
+            Json::Value err; err["error"] = "Database error";
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+            resp->setStatusCode(drogon::k500InternalServerError);
+            (*cb)(resp);
+        }
+    );
 }
 
 void ArticleController::getArticle(const drogon::HttpRequestPtr& req,
                                     std::function<void(const drogon::HttpResponsePtr&)>&& callback,
                                     int id) {
-    std::lock_guard<std::mutex> lock(g_articlesMutex);
+    auto cb = std::make_shared<std::function<void(const drogon::HttpResponsePtr&)>>(std::move(callback));
+    auto db = drogon::app().getDbClient();
 
-    auto articleRows = CsvHelper::readCsv(g_dataDir + "/articles.csv");
-    Json::Value article;
-    bool found = false;
+    db->execSqlAsync(
+        "SELECT id, user_id, username, title, content, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as created_at FROM articles WHERE id=$1",
+        [cb, id, db](const drogon::orm::Result& r) mutable {
+            if (r.empty()) {
+                Json::Value err; err["error"] = "Article not found";
+                auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                resp->setStatusCode(drogon::k404NotFound);
+                (*cb)(resp); return;
+            }
+            auto articleCb = std::make_shared<Json::Value>();
+            (*articleCb)["id"] = r[0]["id"].as<int>();
+            (*articleCb)["user_id"] = r[0]["user_id"].as<int>();
+            (*articleCb)["username"] = r[0]["username"].as<std::string>();
+            (*articleCb)["title"] = r[0]["title"].as<std::string>();
+            (*articleCb)["content"] = r[0]["content"].as<std::string>();
+            (*articleCb)["created_at"] = r[0]["created_at"].as<std::string>();
 
-    for (size_t i = 1; i < articleRows.size(); i++) {
-        const auto& row = articleRows[i];
-        if (row.size() < 6) continue;
-        if (std::stoi(row[0]) == id) {
-            article["id"] = std::stoi(row[0]);
-            article["user_id"] = std::stoi(row[1]);
-            article["username"] = row[2];
-            article["title"] = row[3];
-            article["content"] = row[4];
-            article["created_at"] = row[5];
-            found = true;
-            break;
-        }
-    }
-
-    if (!found) {
-        Json::Value err;
-        err["error"] = "Article not found";
-        auto r = drogon::HttpResponse::newHttpJsonResponse(err);
-        r->setStatusCode(drogon::k404NotFound);
-        callback(r);
-        return;
-    }
-
-    // Load comments
-    auto commentRows = CsvHelper::readCsv(g_dataDir + "/comments.csv");
-    Json::Value comments(Json::arrayValue);
-    // comments header: id,article_id,user_id,username,content,created_at
-    for (size_t i = 1; i < commentRows.size(); i++) {
-        const auto& row = commentRows[i];
-        if (row.size() < 6) continue;
-        if (std::stoi(row[1]) == id) {
-            Json::Value comment;
-            comment["id"] = std::stoi(row[0]);
-            comment["article_id"] = std::stoi(row[1]);
-            comment["user_id"] = std::stoi(row[2]);
-            comment["username"] = row[3];
-            comment["content"] = row[4];
-            comment["created_at"] = row[5];
-            comments.append(comment);
-        }
-    }
-
-    article["comments"] = comments;
-
-    auto resp = drogon::HttpResponse::newHttpJsonResponse(article);
-    callback(resp);
+            db->execSqlAsync(
+                "SELECT id, article_id, user_id, username, content, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as created_at FROM comments WHERE article_id=$1 ORDER BY id ASC",
+                [cb, articleCb](const drogon::orm::Result& cr) {
+                    Json::Value comments(Json::arrayValue);
+                    for (const auto& row : cr) {
+                        Json::Value comment;
+                        comment["id"] = row["id"].as<int>();
+                        comment["article_id"] = row["article_id"].as<int>();
+                        comment["user_id"] = row["user_id"].as<int>();
+                        comment["username"] = row["username"].as<std::string>();
+                        comment["content"] = row["content"].as<std::string>();
+                        comment["created_at"] = row["created_at"].as<std::string>();
+                        comments.append(comment);
+                    }
+                    (*articleCb)["comments"] = comments;
+                    (*cb)(drogon::HttpResponse::newHttpJsonResponse(*articleCb));
+                },
+                [cb](const drogon::orm::DrogonDbException& e) {
+                    Json::Value err; err["error"] = "Database error";
+                    auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+                    resp->setStatusCode(drogon::k500InternalServerError);
+                    (*cb)(resp);
+                },
+                id
+            );
+        },
+        [cb](const drogon::orm::DrogonDbException& e) {
+            Json::Value err; err["error"] = "Database error";
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+            resp->setStatusCode(drogon::k500InternalServerError);
+            (*cb)(resp);
+        },
+        id
+    );
 }
 
 void ArticleController::createArticle(const drogon::HttpRequestPtr& req,
                                        std::function<void(const drogon::HttpResponsePtr&)>&& callback) {
     auto userOpt = getAuthUser(req);
     if (!userOpt) {
-        Json::Value err;
-        err["error"] = "Unauthorized";
+        Json::Value err; err["error"] = "Unauthorized";
         auto r = drogon::HttpResponse::newHttpJsonResponse(err);
         r->setStatusCode(drogon::k401Unauthorized);
-        callback(r);
-        return;
+        callback(r); return;
     }
 
     auto body = req->getJsonObject();
     if (!body) {
-        Json::Value err;
-        err["error"] = "Invalid JSON";
+        Json::Value err; err["error"] = "Invalid JSON";
         auto r = drogon::HttpResponse::newHttpJsonResponse(err);
         r->setStatusCode(drogon::k400BadRequest);
-        callback(r);
-        return;
+        callback(r); return;
     }
 
     std::string title = (*body)["title"].asString();
     std::string content = (*body)["content"].asString();
 
     if (title.empty()) {
-        Json::Value err;
-        err["error"] = "Title is required";
+        Json::Value err; err["error"] = "Title is required";
         auto r = drogon::HttpResponse::newHttpJsonResponse(err);
         r->setStatusCode(drogon::k400BadRequest);
-        callback(r);
-        return;
+        callback(r); return;
     }
 
-    std::lock_guard<std::mutex> lock(g_articlesMutex);
-
-    auto rows = CsvHelper::readCsv(g_dataDir + "/articles.csv");
-    int newId = 1;
-    for (size_t i = 1; i < rows.size(); i++) {
-        if (rows[i].size() >= 1) {
-            try {
-                int rowId = std::stoi(rows[i][0]);
-                if (rowId >= newId) newId = rowId + 1;
-            } catch (...) {}
-        }
-    }
-
-    std::string timestamp = getCurrentTimestamp();
     UserInfo user = userOpt.value();
+    auto cb = std::make_shared<std::function<void(const drogon::HttpResponsePtr&)>>(std::move(callback));
+    auto db = drogon::app().getDbClient();
 
-    std::vector<std::string> newRow = {
-        std::to_string(newId),
-        std::to_string(user.id),
-        user.username,
-        title,
-        content,
-        timestamp
-    };
-
-    CsvHelper::appendCsvRow(g_dataDir + "/articles.csv", newRow);
-
-    Json::Value result;
-    result["id"] = newId;
-    result["user_id"] = user.id;
-    result["username"] = user.username;
-    result["title"] = title;
-    result["content"] = content;
-    result["created_at"] = timestamp;
-
-    auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
-    resp->setStatusCode(drogon::k201Created);
-    callback(resp);
+    db->execSqlAsync(
+        "INSERT INTO articles (user_id, username, title, content) VALUES ($1, $2, $3, $4) RETURNING id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as created_at",
+        [cb, user, title, content](const drogon::orm::Result& r) {
+            Json::Value result;
+            result["id"] = r[0]["id"].as<int>();
+            result["user_id"] = user.id;
+            result["username"] = user.username;
+            result["title"] = title;
+            result["content"] = content;
+            result["created_at"] = r[0]["created_at"].as<std::string>();
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
+            resp->setStatusCode(drogon::k201Created);
+            (*cb)(resp);
+        },
+        [cb](const drogon::orm::DrogonDbException& e) {
+            Json::Value err; err["error"] = "Database error";
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
+            resp->setStatusCode(drogon::k500InternalServerError);
+            (*cb)(resp);
+        },
+        user.id, user.username, title, content
+    );
 }

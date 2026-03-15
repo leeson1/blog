@@ -1,9 +1,35 @@
 services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: blog
+      POSTGRES_USER: blog
+      POSTGRES_PASSWORD: blogpassword
+    volumes:
+      - blog-pg-data:/var/lib/postgresql/data
+    networks:
+      - blog-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blog -d blog"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
   backend:
     image: ghcr.io/leeson1/blog-backend:latest
     restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_NAME=blog
+      - DB_USER=blog
+      - DB_PASS=blogpassword
     volumes:
-      - blog-data:/app/data
+      - blog-images:/app/images
     networks:
       - blog-net
 
@@ -18,7 +44,8 @@ services:
       - blog-net
 
 volumes:
-  blog-data:
+  blog-pg-data:
+  blog-images:
 
 networks:
   blog-net:

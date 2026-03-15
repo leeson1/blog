@@ -6,12 +6,12 @@ RUN mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(n
 
 FROM drogonframework/drogon:latest
 WORKDIR /app
+RUN apt-get update && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/build/blog_backend ./build/blog_backend
 COPY config.json .
-COPY data ./data-init
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
-RUN mkdir -p data/image
-VOLUME ["/app/data"]
+RUN mkdir -p images
+VOLUME ["/app/images"]
 EXPOSE 8080
 ENTRYPOINT ["/app/entrypoint.sh"]

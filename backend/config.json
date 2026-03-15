@@ -10,7 +10,6 @@
     "threads_num": 4,
     "enable_session": false,
     "document_root": "",
-    "upload_path": "./data/image",
     "client_max_body_size": "10M",
     "max_memory_body_size": "10M"
   },
