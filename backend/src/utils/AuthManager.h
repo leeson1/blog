@@ -5,11 +5,7 @@
 #include <random>
 #include <sstream>
 #include <iomanip>
-
-struct UserInfo {
-    int id;
-    std::string username;
-};
+#include "../models/Models.h"
 
 class AuthManager {
 public:
