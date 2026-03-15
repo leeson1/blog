@@ -1,0 +1,25 @@
+services:
+  backend:
+    image: ghcr.io/leeson1/blog-backend:latest
+    restart: always
+    volumes:
+      - blog-data:/app/data
+    networks:
+      - blog-net
+
+  frontend:
+    image: ghcr.io/leeson1/blog-frontend:latest
+    restart: always
+    ports:
+      - "127.0.0.1:13000:80"
+    depends_on:
+      - backend
+    networks:
+      - blog-net
+
+volumes:
+  blog-data:
+
+networks:
+  blog-net:
+    driver: bridge
