@@ -1,8 +1,13 @@
 #include "AuthController.h"
-#include "../utils/AuthManager.h"
+#include "../repositories/pg/PgUserRepository.h"
 #include <drogon/HttpResponse.h>
-#include <drogon/orm/DbClient.h>
 #include <json/json.h>
+
+AuthController::AuthController()
+    : AuthController(std::make_shared<PgUserRepository>()) {}
+
+AuthController::AuthController(std::shared_ptr<IUserRepository> userRepo)
+    : userRepo_(std::move(userRepo)) {}
 
 void AuthController::login(const drogon::HttpRequestPtr& req,
                            std::function<void(const drogon::HttpResponsePtr&)>&& callback) {
@@ -13,10 +18,8 @@ void AuthController::login(const drogon::HttpRequestPtr& req,
         r->setStatusCode(drogon::k400BadRequest);
         callback(r); return;
     }
-
     std::string username = (*body)["username"].asString();
     std::string password = (*body)["password"].asString();
-
     if (username.empty() || password.empty()) {
         Json::Value err; err["error"] = "Username and password required";
         auto r = drogon::HttpResponse::newHttpJsonResponse(err);
@@ -25,36 +28,25 @@ void AuthController::login(const drogon::HttpRequestPtr& req,
     }
 
     auto cb = std::make_shared<std::function<void(const drogon::HttpResponsePtr&)>>(std::move(callback));
-    auto db = drogon::app().getDbClient();
-
-    db->execSqlAsync(
-        "SELECT id, username FROM users WHERE username=$1 AND password=$2",
-        [cb](const drogon::orm::Result& r) {
-            if (r.empty()) {
-                Json::Value err; err["error"] = "Invalid username or password";
-                auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
-                resp->setStatusCode(drogon::k401Unauthorized);
-                (*cb)(resp); return;
+    userRepo_->findByCredentials(username, password,
+        [cb](std::optional<UserInfo> userOpt, std::string error) {
+            if (!error.empty()) {
+                Json::Value err; err["error"] = "Database error";
+                auto r = drogon::HttpResponse::newHttpJsonResponse(err);
+                r->setStatusCode(drogon::k500InternalServerError);
+                (*cb)(r); return;
             }
-            UserInfo user;
-            user.id = r[0]["id"].as<int>();
-            user.username = r[0]["username"].as<std::string>();
-            std::string token = AuthManager::instance().createToken(user);
-
+            if (!userOpt) {
+                Json::Value err; err["error"] = "Invalid username or password";
+                auto r = drogon::HttpResponse::newHttpJsonResponse(err);
+                r->setStatusCode(drogon::k401Unauthorized);
+                (*cb)(r); return;
+            }
+            std::string token = AuthManager::instance().createToken(*userOpt);
             Json::Value result;
             result["token"] = token;
-            Json::Value userJson;
-            userJson["id"] = user.id;
-            userJson["username"] = user.username;
-            result["user"] = userJson;
+            result["user"]["id"] = userOpt->id;
+            result["user"]["username"] = userOpt->username;
             (*cb)(drogon::HttpResponse::newHttpJsonResponse(result));
-        },
-        [cb](const drogon::orm::DrogonDbException& e) {
-            Json::Value err; err["error"] = "Database error";
-            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
-            resp->setStatusCode(drogon::k500InternalServerError);
-            (*cb)(resp);
-        },
-        username, password
-    );
+        });
 }

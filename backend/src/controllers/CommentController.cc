@@ -1,8 +1,13 @@
 #include "CommentController.h"
-#include "../utils/AuthManager.h"
+#include "../repositories/pg/PgCommentRepository.h"
 #include <drogon/HttpResponse.h>
-#include <drogon/orm/DbClient.h>
 #include <json/json.h>
+
+CommentController::CommentController()
+    : CommentController(std::make_shared<PgCommentRepository>()) {}
+
+CommentController::CommentController(std::shared_ptr<ICommentRepository> commentRepo)
+    : commentRepo_(std::move(commentRepo)) {}
 
 std::optional<UserInfo> CommentController::getAuthUser(const drogon::HttpRequestPtr& req) {
     auto auth = req->getHeader("Authorization");
@@ -13,8 +18,7 @@ std::optional<UserInfo> CommentController::getAuthUser(const drogon::HttpRequest
 }
 
 void CommentController::createComment(const drogon::HttpRequestPtr& req,
-                                       std::function<void(const drogon::HttpResponsePtr&)>&& callback,
-                                       int articleId) {
+                                       std::function<void(const drogon::HttpResponsePtr&)>&& callback, int articleId) {
     auto userOpt = getAuthUser(req);
     if (!userOpt) {
         Json::Value err; err["error"] = "Unauthorized";
@@ -22,7 +26,6 @@ void CommentController::createComment(const drogon::HttpRequestPtr& req,
         r->setStatusCode(drogon::k401Unauthorized);
         callback(r); return;
     }
-
     auto body = req->getJsonObject();
     if (!body) {
         Json::Value err; err["error"] = "Invalid JSON";
@@ -30,7 +33,6 @@ void CommentController::createComment(const drogon::HttpRequestPtr& req,
         r->setStatusCode(drogon::k400BadRequest);
         callback(r); return;
     }
-
     std::string content = (*body)["content"].asString();
     if (content.empty()) {
         Json::Value err; err["error"] = "Content is required";
@@ -38,31 +40,23 @@ void CommentController::createComment(const drogon::HttpRequestPtr& req,
         r->setStatusCode(drogon::k400BadRequest);
         callback(r); return;
     }
-
-    UserInfo user = userOpt.value();
+    UserInfo user = *userOpt;
     auto cb = std::make_shared<std::function<void(const drogon::HttpResponsePtr&)>>(std::move(callback));
-    auto db = drogon::app().getDbClient();
-
-    db->execSqlAsync(
-        "INSERT INTO comments (article_id, user_id, username, content) VALUES ($1, $2, $3, $4) RETURNING id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') as created_at",
-        [cb, user, articleId, content](const drogon::orm::Result& r) {
+    commentRepo_->create(articleId, user.id, user.username, content,
+        [cb](std::optional<CommentItem> cOpt, std::string error) {
+            if (!error.empty() || !cOpt) {
+                Json::Value err; err["error"] = "Database error";
+                auto r = drogon::HttpResponse::newHttpJsonResponse(err);
+                r->setStatusCode(drogon::k500InternalServerError);
+                (*cb)(r); return;
+            }
+            const auto& c = *cOpt;
             Json::Value result;
-            result["id"] = r[0]["id"].as<int>();
-            result["article_id"] = articleId;
-            result["user_id"] = user.id;
-            result["username"] = user.username;
-            result["content"] = content;
-            result["created_at"] = r[0]["created_at"].as<std::string>();
+            result["id"] = c.id; result["article_id"] = c.articleId;
+            result["user_id"] = c.userId; result["username"] = c.username;
+            result["content"] = c.content; result["created_at"] = c.createdAt;
             auto resp = drogon::HttpResponse::newHttpJsonResponse(result);
             resp->setStatusCode(drogon::k201Created);
             (*cb)(resp);
-        },
-        [cb](const drogon::orm::DrogonDbException& e) {
-            Json::Value err; err["error"] = "Database error";
-            auto resp = drogon::HttpResponse::newHttpJsonResponse(err);
-            resp->setStatusCode(drogon::k500InternalServerError);
-            (*cb)(resp);
-        },
-        articleId, user.id, user.username, content
-    );
+        });
 }
