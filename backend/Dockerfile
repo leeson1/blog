@@ -2,7 +2,7 @@ FROM drogonframework/drogon:latest AS builder
 WORKDIR /app
 COPY CMakeLists.txt .
 COPY src ./src
-RUN mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j$(nproc)
+RUN mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF && make -j$(nproc)
 
 FROM drogonframework/drogon:latest
 WORKDIR /app
