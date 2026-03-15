@@ -67,12 +67,11 @@ int main() {
             // 插入种子用户（已存在则跳过）
             client->execSqlSync(R"(
                 INSERT INTO users (id, username, password, created_at) VALUES
-                (1, 'admin', 'admin123', '2026-01-01 00:00:00'),
-                (2, 'leeson', 'leeson123', '2026-01-01 00:00:00')
+                (1, 'admin', 'admin123', '2026-01-01 00:00:00')
                 ON CONFLICT DO NOTHING
             )");
             // 重置序列
-            client->execSqlSync("SELECT setval('users_id_seq', GREATEST((SELECT MAX(id) FROM users), 2))");
+            client->execSqlSync("SELECT setval('users_id_seq', GREATEST((SELECT MAX(id) FROM users), 1))");
 
             initialized = true;
             std::cout << "Database initialized successfully." << std::endl;

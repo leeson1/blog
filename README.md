@@ -62,7 +62,6 @@ cd frontend && npm install && npm run dev
 | 用户名 | 密码 |
 |--------|------|
 | admin  | admin123 |
-| leeson | leeson123 |
 
 ## CI/CD
 
