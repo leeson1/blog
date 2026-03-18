@@ -47,6 +47,7 @@ void AuthController::login(const drogon::HttpRequestPtr& req,
             result["token"] = token;
             result["user"]["id"] = userOpt->id;
             result["user"]["username"] = userOpt->username;
+            result["user"]["role"] = userOpt->role;
             (*cb)(drogon::HttpResponse::newHttpJsonResponse(result));
         });
 }

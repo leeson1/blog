@@ -12,6 +12,7 @@ add_executable(blog_backend
     src/controllers/ArticleController.cc
     src/controllers/CommentController.cc
     src/controllers/UploadController.cc
+    src/controllers/AdminController.cc
 )
 target_include_directories(blog_backend PRIVATE src)
 target_link_libraries(blog_backend PRIVATE Drogon::Drogon)

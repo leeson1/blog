@@ -21,7 +21,7 @@ function Login() {
       const { token, user } = res.data
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
-      navigate('/')
+      navigate(user.role === 'admin' ? '/admin' : '/')
     } catch (err) {
       setError(err.response?.data?.error || '登录失败，请重试')
     } finally {

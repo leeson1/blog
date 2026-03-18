@@ -20,4 +20,17 @@ public:
         int userId, const std::string& username,
         const std::string& title, const std::string& content,
         std::function<void(std::optional<ArticleDetail>, std::string /*error*/)> callback) = 0;
+
+    virtual void findAllPaginated(
+        int page, int limit,
+        std::function<void(std::vector<ArticleSummary>, int /*total*/, std::string /*error*/)> callback) = 0;
+
+    virtual void update(
+        int id,
+        const std::string& title, const std::string& content,
+        std::function<void(bool, std::string /*error*/)> callback) = 0;
+
+    virtual void remove(
+        int id,
+        std::function<void(bool, std::string /*error*/)> callback) = 0;
 };

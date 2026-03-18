@@ -95,4 +95,52 @@ public:
             userId, username, title, content
         );
     }
+
+    void findAllPaginated(int page, int limit,
+                          std::function<void(std::vector<ArticleSummary>, int, std::string)> callback) override {
+        auto cb = std::make_shared<decltype(callback)>(std::move(callback));
+        auto db = drogon::app().getDbClient();
+        int offset = (page - 1) * limit;
+        db->execSqlAsync(
+            "SELECT id, user_id, username, title, to_char(created_at,'YYYY-MM-DD HH24:MI:SS') as created_at, COUNT(*) OVER() as total FROM articles ORDER BY id DESC LIMIT $1 OFFSET $2",
+            [cb](const drogon::orm::Result& r) {
+                std::vector<ArticleSummary> list;
+                int total = 0;
+                for (const auto& row : r) {
+                    total = row["total"].as<int>();
+                    list.push_back({ row["id"].as<int>(), row["user_id"].as<int>(),
+                                     row["username"].as<std::string>(), row["title"].as<std::string>(),
+                                     row["created_at"].as<std::string>() });
+                }
+                (*cb)(std::move(list), total, "");
+            },
+            [cb](const drogon::orm::DrogonDbException& e) {
+                (*cb)({}, 0, e.base().what());
+            },
+            limit, offset
+        );
+    }
+
+    void update(int id, const std::string& title, const std::string& content,
+                std::function<void(bool, std::string)> callback) override {
+        auto cb = std::make_shared<decltype(callback)>(std::move(callback));
+        auto db = drogon::app().getDbClient();
+        db->execSqlAsync(
+            "UPDATE articles SET title=$1, content=$2 WHERE id=$3",
+            [cb](const drogon::orm::Result&) { (*cb)(true, ""); },
+            [cb](const drogon::orm::DrogonDbException& e) { (*cb)(false, e.base().what()); },
+            title, content, id
+        );
+    }
+
+    void remove(int id, std::function<void(bool, std::string)> callback) override {
+        auto cb = std::make_shared<decltype(callback)>(std::move(callback));
+        auto db = drogon::app().getDbClient();
+        db->execSqlAsync(
+            "DELETE FROM articles WHERE id=$1",
+            [cb](const drogon::orm::Result&) { (*cb)(true, ""); },
+            [cb](const drogon::orm::DrogonDbException& e) { (*cb)(false, e.base().what()); },
+            id
+        );
+    }
 };

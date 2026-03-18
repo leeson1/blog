@@ -6,6 +6,14 @@
 struct UserInfo {
     int id = 0;
     std::string username;
+    std::string role;
+};
+
+struct UserListItem {
+    int id = 0;
+    std::string username;
+    std::string role;
+    std::string createdAt;
 };
 
 struct ArticleSummary {

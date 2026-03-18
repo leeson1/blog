@@ -38,6 +38,7 @@ int main() {
                     id SERIAL PRIMARY KEY,
                     username VARCHAR(50) UNIQUE NOT NULL,
                     password VARCHAR(255) NOT NULL,
+                    role VARCHAR(10) NOT NULL DEFAULT 'user',
                     created_at TIMESTAMP DEFAULT NOW()
                 )
             )");
@@ -45,7 +46,7 @@ int main() {
             client->execSqlSync(R"(
                 CREATE TABLE IF NOT EXISTS articles (
                     id SERIAL PRIMARY KEY,
-                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    user_id INTEGER NOT NULL,
                     username VARCHAR(50) NOT NULL,
                     title VARCHAR(500) NOT NULL,
                     content TEXT NOT NULL DEFAULT '',
@@ -57,12 +58,17 @@ int main() {
                 CREATE TABLE IF NOT EXISTS comments (
                     id SERIAL PRIMARY KEY,
                     article_id INTEGER NOT NULL REFERENCES articles(id) ON DELETE CASCADE,
-                    user_id INTEGER NOT NULL REFERENCES users(id),
+                    user_id INTEGER NOT NULL,
                     username VARCHAR(50) NOT NULL,
                     content TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT NOW()
                 )
             )");
+
+            // 迁移：为已有部署补充 role 列，移除 user_id 外键
+            client->execSqlSync("ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(10) NOT NULL DEFAULT 'user'");
+            client->execSqlSync("ALTER TABLE articles DROP CONSTRAINT IF EXISTS articles_user_id_fkey");
+            client->execSqlSync("ALTER TABLE comments DROP CONSTRAINT IF EXISTS comments_user_id_fkey");
 
             initialized = true;
             std::cout << "Database initialized successfully." << std::endl;
