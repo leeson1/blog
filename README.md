@@ -57,12 +57,6 @@ cd frontend && npm install && npm run dev
 
 前端运行在 `http://localhost:8000`，API 自动代理到后端 8080 端口。
 
-## 预设账户
-
-| 用户名 | 密码 |
-|--------|------|
-| admin  | admin123 |
-
 ## CI/CD
 
 推送到 `main` 分支后，GitHub Actions 自动：
