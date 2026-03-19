@@ -4,6 +4,8 @@ frontend/dist/
 
 # Backend build
 backend/build/
+backend/.cache/
+backend/compile_commands.json
 
 # OS
 .DS_Store
