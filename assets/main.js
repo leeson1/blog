@@ -166,6 +166,12 @@
         setTimeout(() => $('articles').scrollIntoView({ behavior: 'smooth' }), 50);
       }
     });
+    $('nav-about') && $('nav-about').addEventListener('click', e => {
+      if ($('article-detail').classList.contains('visible')) {
+        e.preventDefault(); closeDetail();
+        setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
+      }
+    });
 
     $('btn-view-all') && $('btn-view-all').addEventListener('click', openAllArticles);
     $('all-back') && $('all-back').addEventListener('click', closeAllArticles);
