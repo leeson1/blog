@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jason Li | Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<nav>
+  <a href="#home" class="nav-logo" id="nav-logo">Jason Li</a>
+  <ul class="nav-links">
+    <li><a href="#home" class="active" id="nav-home">首页</a></li>
+    <li><a href="#articles" id="nav-articles">文章</a></li>
+    <li><a href="#about" id="nav-about">关于我</a></li>
+  </ul>
+</nav>
+
+<!-- ARTICLE DETAIL -->
+<div id="article-detail">
+  <div class="detail-wrap">
+    <button class="detail-back" id="detail-back">← 返回文章列表</button>
+    <div class="detail-tag-row"><span class="detail-tag" id="d-tag"></span></div>
+    <h1 class="detail-title" id="d-title"></h1>
+    <div class="detail-meta">
+      <span id="d-date"></span>
+      <span id="d-time"></span>
+      <span>Jason Li</span>
+    </div>
+    <div class="detail-body" id="d-body"></div>
+
+    <div class="art-comments">
+      <h3 class="art-comments-title">评论</h3>
+      <div id="d-comments"></div>
+    </div>
+
+    <div class="detail-footer">
+      <button class="detail-footer-back" id="detail-footer-back">← 返回列表</button>
+      <div class="detail-footer-info">
+        感谢阅读
+        <strong>Jason Li · Blog</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home">
+  <div class="section-wrap home-inner">
+    <div class="home-avatar">👋</div>
+    <h1 class="home-greeting">
+      嘿，Jason<br>在这里。<br>
+      今天是<span class="day" id="today-day"></span>。
+    </h1>
+    <p class="home-bio">
+      写 Go 和 C++ 的后端工程师，专注游戏服务器架构与视频处理管线。
+      这里记录技术探索、踩坑经历，和一些值得分享的想法。不定期更新，但每篇都认真写。
+    </p>
+    <a href="#articles" class="home-cta" id="home-cta">看看我写了什么 →</a>
+  </div>
+</div>
+
+<!-- ARTICLES (HOME) -->
+<div id="articles">
+  <div class="section-wrap">
+    <h2 class="sec-title">文章</h2>
+    <div class="article-list" id="home-article-list"></div>
+    <div class="articles-footer">
+      <span class="articles-footer-count" id="articles-footer-count"></span>
+      <button class="btn-view-all" id="btn-view-all">查看全部文章 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FULL ARTICLES PAGE -->
+<div id="page-articles">
+  <div class="page-articles-wrap">
+    <button class="detail-back" id="all-back">← 返回首页</button>
+    <div class="page-articles-header">
+      <h2 class="sec-title">全部文章</h2>
+      <span class="page-articles-total" id="all-count"></span>
+    </div>
+    <div class="all-search-wrap">
+      <span class="all-search-icon">⌕</span>
+      <input class="all-search" id="all-search" type="text" placeholder="搜索文章标题…">
+    </div>
+    <div class="all-tag-row">
+      <button class="tag active" data-tag="all">全部</button>
+      <button class="tag" data-tag="go">Go</button>
+      <button class="tag" data-tag="cpp">C++</button>
+      <button class="tag" data-tag="arch">架构</button>
+      <button class="tag" data-tag="tools">工具</button>
+      <button class="tag" data-tag="notes">随笔</button>
+    </div>
+    <div class="all-article-list" id="all-article-list"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about">
+  <div class="section-wrap">
+    <h2 class="sec-title">关于我</h2>
+    <div class="about-grid">
+      <div class="about-card wide">
+        <div class="card-label">简介</div>
+        <p class="bio-text">
+          我是 <strong>Jason Li</strong>，后端工程师。主要用 <strong>Go</strong> 做游戏服务器系统，
+          用 <strong>C++ + CUDA</strong> 做视频处理管线，偶尔折腾部署工具和开发环境。
+          这个 Blog 是我的公开笔记本，写给未来的自己，也分享给路过的人。
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="card-label">技术栈</div>
+        <div class="chip-grid">
+          <span class="chip">Go</span>
+          <span class="chip">C++</span>
+          <span class="chip">CUDA</span>
+          <span class="chip">DeepStream</span>
+          <span class="chip">GStreamer</span>
+          <span class="chip">Docker</span>
+          <span class="chip">Redis</span>
+          <span class="chip">Protobuf</span>
+          <span class="chip">TcaplusDB</span>
+          <span class="chip">OpenCV</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="card-label">经历</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div><div class="tl-year">2023 — 现在</div><div class="tl-role">Backend Developer</div><div class="tl-co">游戏服务器 · Go · Protobuf</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div><div class="tl-year">2021 — 2023</div><div class="tl-role">C++ Engineer</div><div class="tl-co">视频处理 · DeepStream · CUDA</div></div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot"></div></div>
+            <div><div class="tl-year">2019 — 2021</div><div class="tl-role">初级开发</div><div class="tl-co">学习 · 踩坑 · 成长</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-card wide">
+        <div class="card-label">联系</div>
+        <div class="contact-list">
+          <a href="mailto:hi@jasonli.dev" class="contact-row">
+            <div class="contact-row-left"><span>✉️</span><span>hi@jasonli.dev</span></div>
+            <span class="contact-row-muted">→</span>
+          </a>
+          <a href="https://github.com/leeson1" target="_blank" rel="noopener" class="contact-row">
+            <div class="contact-row-left"><span>💻</span><span>GitHub</span></div>
+            <span class="contact-row-muted">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">Jason Li</span>
+  <span>© 2025 · 感谢访问，下次再见。</span>
+</footer>
+
+<script src="./assets/main.js"></script>
+</body>
+</html>
