@@ -159,21 +159,29 @@
   }
 
   function setupHandlers() {
+    const isDetailVisible = () => $('article-detail').classList.contains('visible');
+    const isAllVisible = () => $('page-articles').classList.contains('visible');
+
     // Nav logo & home link
     ['nav-logo', 'nav-home'].forEach(id => {
       $(id) && $(id).addEventListener('click', e => {
-        if ($('article-detail').classList.contains('visible')) { e.preventDefault(); closeDetail(); }
+        if (isDetailVisible()) { e.preventDefault(); closeDetail(); }
+        else if (isAllVisible()) { e.preventDefault(); closeAllArticles(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
       });
     });
     $('nav-articles') && $('nav-articles').addEventListener('click', e => {
-      if ($('article-detail').classList.contains('visible')) {
+      if (isDetailVisible()) {
         e.preventDefault(); closeDetail();
-        setTimeout(() => $('articles').scrollIntoView({ behavior: 'smooth' }), 50);
+      } else if (isAllVisible()) {
+        // 已在全部文章页，不做处理
       }
     });
     $('nav-about') && $('nav-about').addEventListener('click', e => {
-      if ($('article-detail').classList.contains('visible')) {
+      if (isDetailVisible()) {
         e.preventDefault(); closeDetail();
+        setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
+      } else if (isAllVisible()) {
+        e.preventDefault(); closeAllArticles();
         setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
       }
     });
