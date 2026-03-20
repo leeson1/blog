@@ -14,3 +14,6 @@ backend/compile_commands.json
 CLAUDE.md
 node_modules/
 package-lock.json
+
+# Test failure screenshots
+test/fail_*.png
