@@ -204,28 +204,20 @@
   }
 
   function updateNavActive() {
-    // 详情页或全部文章页打开时不处理
     if ($('article-detail').classList.contains('visible') ||
         $('page-articles').classList.contains('visible')) return;
 
-    const scrollY = window.scrollY + 80; // 加上 nav 高度偏移
-    const sections = [
-      { id: 'about',    navId: 'nav-about' },
-      { id: 'articles', navId: 'nav-articles' },
-      { id: 'home',     navId: 'nav-home' },
-    ];
+    const navHeight = 61;
+    const map = { home: 'nav-home', articles: 'nav-articles', about: 'nav-about' };
+    let activeId = 'home';
 
-    let activeNavId = 'nav-home';
-    for (const { id, navId } of sections) {
+    ['home', 'articles', 'about'].forEach(id => {
       const el = $(id);
-      if (el && scrollY >= el.offsetTop) {
-        activeNavId = navId;
-        break;
-      }
-    }
+      if (el && el.getBoundingClientRect().top <= navHeight) activeId = id;
+    });
 
-    ['nav-home', 'nav-articles', 'nav-about'].forEach(id => {
-      $(id) && $(id).classList.toggle('active', id === activeNavId);
+    Object.entries(map).forEach(([id, navId]) => {
+      $(navId) && $(navId).classList.toggle('active', id === activeId);
     });
   }
 
