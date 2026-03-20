@@ -190,6 +190,9 @@
 
     $('all-search') && $('all-search').addEventListener('input', filterAll);
 
+    // 滚动时更新导航高亮
+    window.addEventListener('scroll', updateNavActive, { passive: true });
+
     document.querySelectorAll('.all-tag-row .tag').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.all-tag-row .tag').forEach(t => t.classList.remove('active'));
@@ -197,6 +200,32 @@
         allActiveTag = btn.dataset.tag;
         filterAll();
       });
+    });
+  }
+
+  function updateNavActive() {
+    // 详情页或全部文章页打开时不处理
+    if ($('article-detail').classList.contains('visible') ||
+        $('page-articles').classList.contains('visible')) return;
+
+    const scrollY = window.scrollY + 80; // 加上 nav 高度偏移
+    const sections = [
+      { id: 'about',    navId: 'nav-about' },
+      { id: 'articles', navId: 'nav-articles' },
+      { id: 'home',     navId: 'nav-home' },
+    ];
+
+    let activeNavId = 'nav-home';
+    for (const { id, navId } of sections) {
+      const el = $(id);
+      if (el && scrollY >= el.offsetTop) {
+        activeNavId = navId;
+        break;
+      }
+    }
+
+    ['nav-home', 'nav-articles', 'nav-about'].forEach(id => {
+      $(id) && $(id).classList.toggle('active', id === activeNavId);
     });
   }
 
