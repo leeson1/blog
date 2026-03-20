@@ -1,0 +1,23 @@
+{
+  "name": "project1",
+  "version": "1.0.0",
+  "description": "基于纯静态 HTML/CSS/JS 的个人博客，部署在 GitHub Pages。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leeson1/blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leeson1/blog/issues"
+  },
+  "homepage": "https://github.com/leeson1/blog#readme",
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  }
+}

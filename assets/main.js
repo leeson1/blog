@@ -102,8 +102,25 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function closeDetail() {
+  // 仅隐藏详情页，不决定跳转目标
+  function hideDetail() {
     $('article-detail').classList.remove('visible');
+  }
+
+  // 显示主页面区域，并可选滚动到指定 section
+  function showMain(scrollToId) {
+    mainSections.forEach(s => { const el = $(s); if (el) el.style.display = ''; });
+    document.querySelector('footer').style.display = '';
+    if (scrollToId) {
+      setTimeout(() => $(scrollToId) && $(scrollToId).scrollIntoView({ behavior: 'smooth' }), 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // 返回按钮：关闭详情 → 跳到全部文章页
+  function closeDetail() {
+    hideDetail();
     mainSections.forEach(s => { const el = $(s); if (el) el.style.display = 'none'; });
     document.querySelector('footer').style.display = 'none';
     $('page-articles').classList.add('visible');
@@ -169,24 +186,17 @@
     // Nav logo & home link
     ['nav-logo', 'nav-home'].forEach(id => {
       $(id) && $(id).addEventListener('click', e => {
-        if (isDetailVisible()) { e.preventDefault(); closeDetail(); }
+        if (isDetailVisible()) { e.preventDefault(); hideDetail(); showMain(); }
         else if (isAllVisible()) { e.preventDefault(); closeAllArticles(); }
       });
     });
     $('nav-articles') && $('nav-articles').addEventListener('click', e => {
-      if (isDetailVisible()) {
-        e.preventDefault(); closeDetail();
-      } else if (isAllVisible()) {
-        // 已在全部文章页，不做处理
-      }
+      if (isDetailVisible()) { e.preventDefault(); hideDetail(); showMain('articles'); }
+      else if (isAllVisible()) { /* 已在全部文章页，不做处理 */ }
     });
     $('nav-about') && $('nav-about').addEventListener('click', e => {
-      if (isDetailVisible()) {
-        e.preventDefault(); closeDetail();
-        setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
-      } else if (isAllVisible()) {
-        e.preventDefault(); closeAllArticles('about');
-      }
+      if (isDetailVisible()) { e.preventDefault(); hideDetail(); showMain('about'); }
+      else if (isAllVisible()) { e.preventDefault(); closeAllArticles('about'); }
     });
 
     $('btn-view-all') && $('btn-view-all').addEventListener('click', openAllArticles);
