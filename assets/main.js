@@ -4,6 +4,7 @@
   const RECENT_COUNT = 5;
   let allPosts = [];
   let allActiveTag = 'all';
+  let detailSource = 'home'; // 'home' | 'all'
   const mainSections = ['home', 'articles', 'about'];
 
   const $ = id => document.getElementById(id);
@@ -30,13 +31,13 @@
     container.innerHTML = allPosts.slice(0, RECENT_COUNT).map(p => articleCardHTML(p)).join('');
     const counter = $('articles-footer-count');
     if (counter) counter.textContent = `显示最近 ${RECENT_COUNT} 篇 · 共 ${allPosts.length} 篇`;
-    attachCardClicks(container);
+    attachCardClicks(container, 'home');
   }
 
   function renderAllArticles() {
     const container = $('all-article-list');
     container.innerHTML = allPosts.map(p => articleCardHTML(p, true)).join('');
-    attachCardClicks(container);
+    attachCardClicks(container, 'all');
     updateAllCount();
   }
 
@@ -51,16 +52,16 @@
     </a>`;
   }
 
-  function attachCardClicks(container) {
+  function attachCardClicks(container, source) {
     container.querySelectorAll('.article-card').forEach(card => {
       card.addEventListener('click', e => {
         e.preventDefault();
-        openArticle(card.dataset.id);
+        openArticle(card.dataset.id, source);
       });
     });
   }
 
-  async function openArticle(id) {
+  async function openArticle(id, source) {
     const post = allPosts.find(p => p.id === id);
     if (!post) return;
 
@@ -70,7 +71,7 @@
     $('d-time').textContent = post.readTime + ' read';
     $('d-body').innerHTML = '<p style="color:var(--muted)">加载中…</p>';
 
-    showDetail();
+    showDetail(source);
 
     try {
       const res = await fetch('./posts/' + id + '.html');
@@ -92,7 +93,8 @@
     commentsEl.appendChild(script);
   }
 
-  function showDetail() {
+  function showDetail(source) {
+    detailSource = source || 'home';
     mainSections.forEach(s => { const el = $(s); if (el) el.style.display = 'none'; });
     $('page-articles').classList.remove('visible');
     document.querySelector('footer').style.display = 'none';
@@ -102,8 +104,15 @@
 
   function closeDetail() {
     $('article-detail').classList.remove('visible');
-    mainSections.forEach(s => { const el = $(s); if (el) el.style.display = ''; });
-    document.querySelector('footer').style.display = '';
+    if (detailSource === 'all') {
+      document.querySelector('footer').style.display = 'none';
+      $('page-articles').classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      mainSections.forEach(s => { const el = $(s); if (el) el.style.display = ''; });
+      document.querySelector('footer').style.display = '';
+      setTimeout(() => $('articles').scrollIntoView({ behavior: 'smooth' }), 50);
+    }
   }
 
   function openAllArticles() {
