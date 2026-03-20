@@ -74,8 +74,9 @@
     showDetail(source);
 
     try {
-      const res = await fetch('./posts/' + id + '.html');
-      $('d-body').innerHTML = await res.text();
+      const res = await fetch('./docs/' + id + '.md');
+      const md = await res.text();
+      $('d-body').innerHTML = marked.parse(md);
     } catch (e) {
       $('d-body').innerHTML = '<p>文章加载失败，请刷新重试。</p>';
     }

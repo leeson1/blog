@@ -11,7 +11,7 @@ function startServer() {
     let filePath = path.join(ROOT, req.url === '/' ? '/index.html' : req.url.split('?')[0]);
     if (!fs.existsSync(filePath)) { res.writeHead(404); res.end('Not found'); return; }
     const ext = path.extname(filePath);
-    const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.png': 'image/png' };
+    const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript', '.json': 'application/json', '.jpg': 'image/jpeg', '.png': 'image/png', '.md': 'text/markdown' };
     res.writeHead(200, { 'Content-Type': mime[ext] || 'text/plain' });
     fs.createReadStream(filePath).pipe(res);
   }).listen(PORT);
