@@ -119,7 +119,7 @@
     updateAllCount();
   }
 
-  function closeAllArticles() {
+  function closeAllArticles(scrollToId) {
     $('page-articles').classList.remove('visible');
     mainSections.forEach(s => { const el = $(s); if (el) el.style.display = ''; });
     document.querySelector('footer').style.display = '';
@@ -129,7 +129,11 @@
       t.classList.toggle('active', t.dataset.tag === 'all');
     });
     filterAll();
-    setTimeout(() => $('articles').scrollIntoView({ behavior: 'smooth' }), 50);
+    if (scrollToId) {
+      setTimeout(() => $(scrollToId) && $(scrollToId).scrollIntoView({ behavior: 'smooth' }), 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   function updateAllCount() {
@@ -166,7 +170,7 @@
     ['nav-logo', 'nav-home'].forEach(id => {
       $(id) && $(id).addEventListener('click', e => {
         if (isDetailVisible()) { e.preventDefault(); closeDetail(); }
-        else if (isAllVisible()) { e.preventDefault(); closeAllArticles(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        else if (isAllVisible()) { e.preventDefault(); closeAllArticles(); }
       });
     });
     $('nav-articles') && $('nav-articles').addEventListener('click', e => {
@@ -181,13 +185,12 @@
         e.preventDefault(); closeDetail();
         setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
       } else if (isAllVisible()) {
-        e.preventDefault(); closeAllArticles();
-        setTimeout(() => $('about').scrollIntoView({ behavior: 'smooth' }), 50);
+        e.preventDefault(); closeAllArticles('about');
       }
     });
 
     $('btn-view-all') && $('btn-view-all').addEventListener('click', openAllArticles);
-    $('all-back') && $('all-back').addEventListener('click', closeAllArticles);
+    $('all-back') && $('all-back').addEventListener('click', () => closeAllArticles('articles'));
     $('detail-back') && $('detail-back').addEventListener('click', closeDetail);
     $('detail-footer-back') && $('detail-footer-back').addEventListener('click', closeDetail);
 
