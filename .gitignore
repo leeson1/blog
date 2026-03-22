@@ -13,7 +13,6 @@ backend/compile_commands.json
 # Claude
 CLAUDE.md
 node_modules/
-package-lock.json
 
 # Test
 test/
