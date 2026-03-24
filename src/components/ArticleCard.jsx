@@ -13,7 +13,7 @@ export default function ArticleCard({ post }) {
         <div className="article-meta">
           <span className="article-meta-tag">{post.tag}</span>
           <span>{post.date}</span>
-          <span>{post.readTime}</span>
+
         </div>
       </div>
       <span className="article-arrow">→</span>

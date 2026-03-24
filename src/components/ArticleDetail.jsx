@@ -66,8 +66,7 @@ export default function ArticleDetail() {
             <h1 className="detail-title" id="d-title">{post.title}</h1>
             <div className="detail-meta">
               <span id="d-date">{post.date}</span>
-              <span id="d-time">{post.readTime} read</span>
-              <span>Jason Li</span>
+<span>Jason Li</span>
             </div>
           </>
         )}
