@@ -63,13 +63,13 @@ export function ArticleDetail() {
   }, [loading, theme, id]);
 
   return (
-    <div id="article-detail" className="min-h-screen bg-[#fafafa]">
+    <div id="article-detail" className="min-h-screen bg-[#fafafa] dark:bg-gray-900">
       <article className="max-w-2xl mx-auto px-8 py-16">
         {/* 返回文章列表 */}
         <Link
           id="detail-back"
           to="/articles"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-700 transition-colors mb-12 text-sm"
+          className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mb-12 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           返回文章列表
@@ -78,41 +78,41 @@ export function ArticleDetail() {
         {post && (
           <header className="mb-12 space-y-3">
             <div className="flex items-center gap-3 flex-wrap">
-              <span id="d-tag" className="text-xs px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">{post.tag}</span>
-              <time id="d-date" className="text-sm text-gray-400">{post.date}</time>
-              <span id="d-time" className="text-sm text-gray-400">{post.readTime}</span>
+              <span id="d-tag" className="text-xs px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
+              <time id="d-date" className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
+              <span id="d-time" className="text-sm text-gray-400 dark:text-gray-500">{post.readTime}</span>
             </div>
-            <h1 id="d-title" className="text-3xl text-gray-900 leading-tight">{post.title}</h1>
+            <h1 id="d-title" className="text-3xl text-gray-900 dark:text-gray-100 leading-tight">{post.title}</h1>
           </header>
         )}
 
         <div id="d-body" className="md-content">
           {loading ? (
-            <p className="text-gray-400 text-sm">加载中…</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">加载中…</p>
           ) : content ? (
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
           ) : (
-            <p className="text-gray-400 text-sm">文章加载失败，请刷新重试。</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">文章加载失败，请刷新重试。</p>
           )}
         </div>
 
         {!loading && (
           <>
-            <div className="mt-16 pt-8 border-t border-gray-200">
-              <h3 className="text-sm text-gray-500 mb-4">评论</h3>
+            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+              <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-4">评论</h3>
               <div ref={commentsRef}></div>
             </div>
 
-            <div className="mt-12 pt-8 border-t border-gray-100 flex items-center justify-between">
+            <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <Link
                 id="detail-footer-back"
                 to="/articles"
-                className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-700 transition-colors text-sm"
+                className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-sm"
               >
                 <ArrowLeft className="h-4 w-4" />
                 返回列表
               </Link>
-              <span className="text-xs text-gray-300">Jason Li · Blog</span>
+              <span className="text-xs text-gray-300 dark:text-gray-600">Jason Li · Blog</span>
             </div>
           </>
         )}

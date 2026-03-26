@@ -34,7 +34,7 @@ export function Home() {
   return (
     <div id="home" className="flex h-screen">
       {/* 左侧固定面板 */}
-      <div className="w-2/5 bg-[#fafafa] border-r border-gray-200 flex items-center justify-center p-12 fixed left-0 top-0 h-screen overflow-y-auto">
+      <div className="w-2/5 bg-[#fafafa] dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex items-center justify-center p-12 fixed left-0 top-0 h-screen overflow-y-auto">
         <div className="max-w-xs w-full space-y-8">
           {/* 头像 */}
           <div className="home-avatar">
@@ -46,8 +46,8 @@ export function Home() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-4xl tracking-tight text-gray-900">Jason Li</h1>
-            <p className="text-sm text-gray-500 leading-relaxed">
+            <h1 className="text-4xl tracking-tight text-gray-900 dark:text-gray-100">Jason Li</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               写 Go 和 C++ 的后端工程师，专注游戏服务器架构与视频处理管线。
             </p>
           </div>
@@ -56,21 +56,21 @@ export function Home() {
             <Link
               id="nav-home"
               to="/"
-              className="block text-gray-900 hover:text-gray-500 transition-colors py-1.5 text-sm"
+              className="block text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-400 transition-colors py-1.5 text-sm"
             >
               首页
             </Link>
             <Link
               id="nav-articles"
               to="/articles"
-              className="block text-gray-600 hover:text-gray-900 transition-colors py-1.5 text-sm"
+              className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors py-1.5 text-sm"
             >
               文章
             </Link>
             <Link
               id="nav-about"
               to="/about"
-              className="block text-gray-600 hover:text-gray-900 transition-colors py-1.5 text-sm"
+              className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors py-1.5 text-sm"
             >
               关于我
             </Link>
@@ -94,7 +94,7 @@ export function Home() {
           <button
             id="theme-toggle"
             onClick={toggleTheme}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label="切换主题"
           >
             {theme === 'light' ? '🌙 深色模式' : '☀️ 浅色模式'}
@@ -115,32 +115,32 @@ export function Home() {
                 >
                   <article className="space-y-2">
                     <div className="flex items-center gap-3 flex-wrap">
-                      <time className="text-sm text-gray-400">{post.date}</time>
-                      <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{post.tag}</span>
-                      <span className="text-xs text-gray-400">{post.readTime}</span>
+                      <time className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
+                      <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{post.readTime}</span>
                     </div>
-                    <h2 className="text-lg text-gray-900 group-hover:text-gray-500 transition-colors leading-snug">
+                    <h2 className="text-lg text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors leading-snug">
                       {post.title}
                     </h2>
                   </article>
                 </Link>
               ))
             ) : posts.length > 0 ? (
-              <div className="text-center py-16 text-gray-400 text-sm">
+              <div className="text-center py-16 text-gray-400 dark:text-gray-500 text-sm">
                 没有找到相关文章
               </div>
             ) : null}
           </div>
 
           {posts.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-gray-100 flex items-center justify-between">
-              <span id="articles-footer-count" className="text-xs text-gray-400">
+            <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <span id="articles-footer-count" className="text-xs text-gray-400 dark:text-gray-500">
                 共 {posts.length} 篇文章
               </span>
               <Link
                 id="btn-view-all"
                 to="/articles"
-                className="text-sm text-gray-600 hover:text-gray-400 transition-colors"
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors"
               >
                 查看全部文章 →
               </Link>

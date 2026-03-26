@@ -43,13 +43,13 @@ export function Articles() {
   }, [posts, activeTag, searchTerm]);
 
   return (
-    <div id="page-articles" className="min-h-screen">
+    <div id="page-articles" className="min-h-screen dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-8 py-16">
         {/* 返回按钮 */}
         <Link
           id="all-back"
           to="/"
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-12 text-sm"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-12 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           返回首页
@@ -58,8 +58,8 @@ export function Articles() {
         {/* 标题 + 计数 + 搜索 */}
         <div className="mb-10 space-y-4">
           <div className="flex items-baseline gap-4">
-            <h1 className="text-3xl text-gray-900">所有文章</h1>
-            <span id="all-count" className="text-sm text-gray-400">
+            <h1 className="text-3xl text-gray-900 dark:text-gray-100">所有文章</h1>
+            <span id="all-count" className="text-sm text-gray-400 dark:text-gray-500">
               {posts.length > 0 && (
                 filtered.length === posts.length
                   ? `共 ${posts.length} 篇`
@@ -90,8 +90,8 @@ export function Articles() {
               onClick={() => setActiveTag(t.id)}
               className={`tag text-xs px-3 py-1.5 rounded-full border transition-colors ${
                 activeTag === t.id
-                  ? 'active bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'active bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100'
+                  : 'bg-white dark:bg-transparent text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
               }`}
             >
               {t.label}
@@ -106,22 +106,22 @@ export function Articles() {
               <Link
                 key={post.id}
                 to={`/articles/${post.id}`}
-                className="block group article-card border-b border-gray-100 pb-8 last:border-0"
+                className="block group article-card border-b border-gray-100 dark:border-gray-800 pb-8 last:border-0"
               >
                 <article className="space-y-2">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <time className="text-sm text-gray-400">{post.date}</time>
-                    <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">{post.tag}</span>
-                    <span className="text-xs text-gray-400">{post.readTime}</span>
+                    <time className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
+                    <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{post.readTime}</span>
                   </div>
-                  <h2 className="text-lg text-gray-900 group-hover:text-gray-500 transition-colors leading-snug">
+                  <h2 className="text-lg text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors leading-snug">
                     {post.title}
                   </h2>
                 </article>
               </Link>
             ))
           ) : (
-            <div className="all-empty text-center py-16 text-gray-400 text-sm">
+            <div className="all-empty text-center py-16 text-gray-400 dark:text-gray-500 text-sm">
               {searchTerm ? `没有找到含「${searchTerm}」的文章` : '该分类下暂无文章'}
             </div>
           )}
