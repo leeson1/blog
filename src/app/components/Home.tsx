@@ -76,20 +76,6 @@ export function Home() {
             </Link>
           </nav>
 
-          {/* 搜索框 */}
-          <div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="搜索文章..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-
           {/* 主题切换 */}
           <button
             id="theme-toggle"
@@ -105,6 +91,18 @@ export function Home() {
       {/* 右侧滚动区域 */}
       <div className="w-3/5 ml-[40%]">
         <div className="max-w-2xl mx-auto px-12 py-16">
+          {/* 搜索框 */}
+          <div className="relative mb-10">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="搜索文章..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
           <div id="home-article-list" className="space-y-10">
             {filtered.length > 0 ? (
               filtered.map(post => (
