@@ -10,7 +10,6 @@ interface Post {
   tag: string;
   title: string;
   date: string;
-  readTime: string;
 }
 
 export function ArticleDetail() {
@@ -80,7 +79,7 @@ export function ArticleDetail() {
             <div className="flex items-center gap-3 flex-wrap">
               <span id="d-tag" className="text-xs px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
               <time id="d-date" className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
-              <span id="d-time" className="text-sm text-gray-400 dark:text-gray-500">{post.readTime}</span>
+
             </div>
             <h1 id="d-title" className="text-3xl text-gray-900 dark:text-gray-100 leading-tight">{post.title}</h1>
           </header>

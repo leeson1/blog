@@ -9,7 +9,6 @@ interface Post {
   tags: string[];
   title: string;
   date: string;
-  readTime: string;
 }
 
 const TAGS = [
@@ -112,7 +111,7 @@ export function Articles() {
                   <div className="flex items-center gap-3 flex-wrap">
                     <time className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
                     <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">{post.readTime}</span>
+
                   </div>
                   <h2 className="text-lg text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors leading-snug">
                     {post.title}
