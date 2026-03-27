@@ -64,7 +64,7 @@
     "readTime": "4 min"
   },
   {
-    "id": "亿级用户下全服排名系统设计总结",
+    "id": "global-ranking-design",
     "tag": "Go",
     "tags": ["go", "arch"],
     "title": "亿级用户下全服排名系统设计总结",

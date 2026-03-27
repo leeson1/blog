@@ -62,5 +62,13 @@
     "title": "开发者的 iTerm2：Dracula + Powerlevel10k 完整配置",
     "date": "2024.11.18",
     "readTime": "4 min"
+  },
+  {
+    "id": "global-ranking-design",
+    "tag": "Go",
+    "tags": ["go", "arch"],
+    "title": "亿级用户下全服排名系统设计总结",
+    "date": "2025.12.18",
+    "readTime": "4 min"
   }
 ]
