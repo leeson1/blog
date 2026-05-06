@@ -18,7 +18,7 @@ export function Home() {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    fetch(import.meta.env.BASE_URL + 'posts/index.json')
+    fetch(import.meta.env.BASE_URL + 'posts/index.json?t=' + Date.now())
       .then(r => r.json())
       .then(setPosts)
       .catch(() => setPosts([]));

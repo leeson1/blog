@@ -26,7 +26,7 @@ export function Articles() {
   const [activeTag, setActiveTag] = useState('all');
 
   useEffect(() => {
-    fetch(import.meta.env.BASE_URL + 'posts/index.json')
+    fetch(import.meta.env.BASE_URL + 'posts/index.json?t=' + Date.now())
       .then(r => r.json())
       .then(setPosts)
       .catch(() => setPosts([]));

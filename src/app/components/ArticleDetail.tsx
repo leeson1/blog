@@ -26,7 +26,7 @@ export function ArticleDetail() {
     setPost(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    fetch(import.meta.env.BASE_URL + 'posts/index.json')
+    fetch(import.meta.env.BASE_URL + 'posts/index.json?t=' + Date.now())
       .then(r => r.json())
       .then((posts: Post[]) => {
         const found = posts.find(p => p.id === id);
