@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +22,18 @@ export function ArticleDetail() {
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
   const commentsRef = useRef<HTMLDivElement>(null);
+
+  const wordCount = useMemo(() => {
+    if (!content) return 0;
+    const stripped = content
+      .replace(/```[\s\S]*?```/g, '')   // 去掉代码块
+      .replace(/`[^`]*`/g, '')          // 去掉行内代码
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, '')  // 去掉图片
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1'); // 链接保留文字
+    const chinese = (stripped.match(/[一-鿿]/g) || []).length;
+    const english = (stripped.match(/[a-zA-Z0-9]+/g) || []).length;
+    return chinese + english;
+  }, [content]);
 
   useEffect(() => {
     setLoading(true);
@@ -121,6 +133,12 @@ export function ArticleDetail() {
             <p className="text-gray-400 dark:text-gray-500 text-sm">文章加载失败，请刷新重试。</p>
           )}
         </div>
+
+        {!loading && content && (
+          <div className="mt-8 text-xs text-gray-400 dark:text-gray-500 text-right">
+            全文约 {wordCount.toLocaleString()} 字
+          </div>
+        )}
 
         {!loading && (
           <>
