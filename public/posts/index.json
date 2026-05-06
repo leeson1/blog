@@ -1,5 +1,12 @@
 [
   {
+    "id": "cuda-programming-guide-notes",
+    "tag": "C++",
+    "tags": ["cpp"],
+    "title": "CUDA C 编程权威指南 — 学习笔记",
+    "date": "2026.05.06"
+  },
+  {
     "id": "stateless-gamesvr",
     "tag": "Go",
     "tags": ["go", "arch"],
