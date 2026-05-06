@@ -90,7 +90,31 @@ export function ArticleDetail() {
           {loading ? (
             <p className="text-gray-400 dark:text-gray-500 text-sm">加载中…</p>
           ) : content ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>{content}</ReactMarkdown>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeSlug]}
+              components={{
+                a: ({ href, children, ...props }) => {
+                  if (href && href.startsWith('#')) {
+                    return (
+                      <a
+                        href={href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const id = decodeURIComponent(href.slice(1));
+                          const el = document.getElementById(id);
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }}
+                        {...props}
+                      >
+                        {children}
+                      </a>
+                    );
+                  }
+                  return <a href={href} {...props}>{children}</a>;
+                },
+              }}
+            >{content}</ReactMarkdown>
           ) : (
             <p className="text-gray-400 dark:text-gray-500 text-sm">文章加载失败，请刷新重试。</p>
           )}
