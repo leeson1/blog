@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/atom-one-dark.css";
 import { useTheme } from "../App";
 
 interface Post {
@@ -92,7 +94,7 @@ export function ArticleDetail() {
           ) : content ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeSlug]}
+              rehypePlugins={[rehypeSlug, rehypeHighlight]}
               components={{
                 a: ({ href, children, ...props }) => {
                   if (href && href.startsWith('#')) {
