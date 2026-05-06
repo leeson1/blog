@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 import { useTheme } from "../App";
 
 interface Post {
@@ -89,7 +90,7 @@ export function ArticleDetail() {
           {loading ? (
             <p className="text-gray-400 dark:text-gray-500 text-sm">加载中…</p>
           ) : content ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>{content}</ReactMarkdown>
           ) : (
             <p className="text-gray-400 dark:text-gray-500 text-sm">文章加载失败，请刷新重试。</p>
           )}
