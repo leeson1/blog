@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Search } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Input } from "./ui/input";
 import { useTheme } from "../App";
 
@@ -14,14 +16,21 @@ interface Post {
 
 export function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [intro, setIntro] = useState('');
   const [searchTerm, setSearchTerm] = useState("");
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    fetch(import.meta.env.BASE_URL + 'posts/index.json?t=' + Date.now())
+    const t = Date.now();
+    fetch(import.meta.env.BASE_URL + 'posts/index.json?t=' + t)
       .then(r => r.json())
       .then(setPosts)
       .catch(() => setPosts([]));
+
+    fetch(import.meta.env.BASE_URL + 'home/intro.md?t=' + t)
+      .then(r => r.text())
+      .then(setIntro)
+      .catch(() => setIntro(''));
   }, []);
 
   const filtered = posts.filter(p =>
@@ -46,9 +55,9 @@ export function Home() {
 
           <div className="space-y-2">
             <h1 className="text-4xl tracking-tight text-gray-900 dark:text-gray-100">Jason Li</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              写 Go 和 C++ 的后端工程师，专注游戏服务器架构与视频处理管线。
-            </p>
+            <div className="home-intro text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
+            </div>
           </div>
 
           <nav className="space-y-1 pt-2">
