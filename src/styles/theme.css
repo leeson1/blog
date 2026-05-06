@@ -98,7 +98,7 @@
   padding: 1.25rem;
   border-radius: 0.5rem;
   overflow-x: auto;
-  margin-bottom: 1.25rem;
+  margin: 0;
 }
 
 .md-content pre code {
@@ -106,6 +106,36 @@
   padding: 0;
   color: inherit;
   font-size: 0.875rem;
+}
+
+.md-content .code-block-wrapper {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.md-content .code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: #d1d5db;
+  background: rgba(55, 65, 81, 0.7);
+  border: 1px solid rgba(156, 163, 175, 0.2);
+  border-radius: 0.3rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.md-content .code-block-wrapper:hover .code-copy-btn {
+  opacity: 1;
+}
+
+.md-content .code-copy-btn:hover {
+  background: rgba(75, 85, 99, 0.9);
+  color: #f9fafb;
 }
 
 .md-content blockquote {

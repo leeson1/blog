@@ -15,6 +15,36 @@ interface Post {
   date: string;
 }
 
+function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) {
+  const ref = useRef<HTMLPreElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const text = ref.current?.innerText ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <div className="code-block-wrapper">
+      <pre ref={ref} {...props}>{children}</pre>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label="复制代码"
+        className="code-copy-btn"
+      >
+        {copied ? '已复制' : '复制'}
+      </button>
+    </div>
+  );
+}
+
 export function ArticleDetail() {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
@@ -108,6 +138,7 @@ export function ArticleDetail() {
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeSlug, rehypeHighlight]}
               components={{
+                pre: CodeBlock,
                 a: ({ href, children, ...props }) => {
                   if (href && href.startsWith('#')) {
                     return (
