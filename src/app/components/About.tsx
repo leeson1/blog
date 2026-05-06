@@ -21,9 +21,9 @@ export function About() {
           <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
             <p>
               我是 <strong className="text-gray-900 dark:text-gray-100">Jason Li</strong>，后端工程师。
-              主要用 <strong className="text-gray-900 dark:text-gray-100">Go</strong> 做游戏服务器系统，
-              用 <strong className="text-gray-900 dark:text-gray-100">C++ + CUDA</strong> 做视频处理管线，
-              偶尔折腾部署工具和开发环境。
+              目前用 <strong className="text-gray-900 dark:text-gray-100">Go</strong> 做游戏服务器开发，
+              此前长期用 <strong className="text-gray-900 dark:text-gray-100">C++</strong> 做游戏服务器，
+              也做过一段 <strong className="text-gray-900 dark:text-gray-100">C++ + CUDA</strong> 的流媒体视频处理。
             </p>
             <p>
               这个 Blog 是我的公开笔记本，写给未来的自己，也分享给路过的人。不定期更新，但每篇都认真写。
@@ -45,9 +45,9 @@ export function About() {
             <h2 className="text-lg text-gray-900 dark:text-gray-100">经历</h2>
             <div className="space-y-4">
               {[
-                { year: '2023 — 现在', role: 'Backend Developer', desc: '游戏服务器 · Go · Protobuf' },
-                { year: '2021 — 2023', role: 'C++ Engineer', desc: '视频处理 · DeepStream · CUDA' },
-                { year: '2019 — 2021', role: '初级开发', desc: '学习 · 踩坑 · 成长' },
+                { year: '2025.9 — 现在', role: 'Go Backend Developer', desc: '游戏服务器 · Go · Protobuf' },
+                { year: '2025.4 — 2025.9', role: 'Video Pipeline Engineer', desc: '流媒体视频处理 · C++ · CUDA · GStreamer · DeepStream' },
+                { year: '2022.6 — 2025.4', role: 'C++ Game Server Developer', desc: '游戏服务器 · C++' },
               ].map((item, i) => (
                 <div key={i} className="flex gap-4">
                   <div className="flex flex-col items-center pt-1">
