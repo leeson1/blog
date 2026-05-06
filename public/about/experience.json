@@ -1,0 +1,17 @@
+[
+  {
+    "year": "2025.9 — 现在",
+    "role": "Go Backend Developer",
+    "desc": "游戏服务器 · Go · Protobuf"
+  },
+  {
+    "year": "2025.4 — 2025.9",
+    "role": "Video Pipeline Engineer",
+    "desc": "流媒体视频处理 · C++ · CUDA · GStreamer · DeepStream"
+  },
+  {
+    "year": "2022.6 — 2025.4",
+    "role": "C++ Game Server Developer",
+    "desc": "游戏服务器 · C++"
+  }
+]

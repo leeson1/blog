@@ -1,7 +1,53 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+interface ExperienceItem {
+  year: string;
+  role: string;
+  desc: string;
+}
+
+interface ContactItem {
+  icon: string;
+  label: string;
+  href: string;
+  external?: boolean;
+}
 
 export function About() {
+  const [intro, setIntro] = useState('');
+  const [skills, setSkills] = useState<string[]>([]);
+  const [experience, setExperience] = useState<ExperienceItem[]>([]);
+  const [contacts, setContacts] = useState<ContactItem[]>([]);
+
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL;
+    const t = Date.now();
+
+    fetch(`${base}about/intro.md?t=${t}`)
+      .then(r => r.text())
+      .then(setIntro)
+      .catch(() => setIntro(''));
+
+    fetch(`${base}about/skills.json?t=${t}`)
+      .then(r => r.json())
+      .then(setSkills)
+      .catch(() => setSkills([]));
+
+    fetch(`${base}about/experience.json?t=${t}`)
+      .then(r => r.json())
+      .then(setExperience)
+      .catch(() => setExperience([]));
+
+    fetch(`${base}about/contact.json?t=${t}`)
+      .then(r => r.json())
+      .then(setContacts)
+      .catch(() => setContacts([]));
+  }, []);
+
   return (
     <div id="about" className="min-h-screen dark:bg-gray-950">
       <div className="max-w-2xl mx-auto px-8 py-16">
@@ -18,72 +64,69 @@ export function About() {
           <h1 className="text-3xl text-gray-900 dark:text-gray-100">关于我</h1>
 
           {/* 简介 */}
-          <div className="space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-            <p>
-              我是 <strong className="text-gray-900 dark:text-gray-100">Jason Li</strong>，后端工程师。
-              目前用 <strong className="text-gray-900 dark:text-gray-100">Go</strong> 做游戏服务器开发，
-              此前长期用 <strong className="text-gray-900 dark:text-gray-100">C++</strong> 做游戏服务器，
-              也做过一段 <strong className="text-gray-900 dark:text-gray-100">C++ + CUDA</strong> 的流媒体视频处理。
-            </p>
-            <p>
-              这个 Blog 是我的公开笔记本，写给未来的自己，也分享给路过的人。不定期更新，但每篇都认真写。
-            </p>
+          <div className="about-intro space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                strong: ({ children }) => (
+                  <strong className="text-gray-900 dark:text-gray-100">{children}</strong>
+                ),
+              }}
+            >{intro}</ReactMarkdown>
           </div>
 
           {/* 技术栈 */}
-          <div className="space-y-3">
-            <h2 className="text-lg text-gray-900 dark:text-gray-100">技术栈</h2>
-            <div className="flex flex-wrap gap-2">
-              {['Go', 'C++', 'CUDA', 'DeepStream', 'GStreamer', 'Docker', 'Redis', 'Protobuf', 'TcaplusDB', 'OpenCV'].map(s => (
-                <span key={s} className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{s}</span>
-              ))}
+          {skills.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="text-lg text-gray-900 dark:text-gray-100">技术栈</h2>
+              <div className="flex flex-wrap gap-2">
+                {skills.map(s => (
+                  <span key={s} className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{s}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 经历 */}
-          <div className="space-y-3">
-            <h2 className="text-lg text-gray-900 dark:text-gray-100">经历</h2>
-            <div className="space-y-4">
-              {[
-                { year: '2025.9 — 现在', role: 'Go Backend Developer', desc: '游戏服务器 · Go · Protobuf' },
-                { year: '2025.4 — 2025.9', role: 'Video Pipeline Engineer', desc: '流媒体视频处理 · C++ · CUDA · GStreamer · DeepStream' },
-                { year: '2022.6 — 2025.4', role: 'C++ Game Server Developer', desc: '游戏服务器 · C++' },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="flex flex-col items-center pt-1">
-                    <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
-                    {i < 2 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
+          {experience.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="text-lg text-gray-900 dark:text-gray-100">经历</h2>
+              <div className="space-y-4">
+                {experience.map((item, i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="flex flex-col items-center pt-1">
+                      <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+                      {i < experience.length - 1 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
+                    </div>
+                    <div className="pb-4">
+                      <div className="text-xs text-gray-400 dark:text-gray-500">{item.year}</div>
+                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{item.role}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</div>
+                    </div>
                   </div>
-                  <div className="pb-4">
-                    <div className="text-xs text-gray-400 dark:text-gray-500">{item.year}</div>
-                    <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{item.role}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 联系 */}
-          <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <h2 className="text-lg text-gray-900 dark:text-gray-100">联系</h2>
-            <div className="space-y-2">
-              <a
-                href="mailto:774272440@qq.com"
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-              >
-                ✉️ 774272440@qq.com
-              </a>
-              <a
-                href="https://github.com/leeson1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-              >
-                💻 GitHub / leeson1
-              </a>
+          {contacts.length > 0 && (
+            <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <h2 className="text-lg text-gray-900 dark:text-gray-100">联系</h2>
+              <div className="space-y-2">
+                {contacts.map(c => (
+                  <a
+                    key={c.href}
+                    href={c.href}
+                    {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                  >
+                    {c.icon} {c.label}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

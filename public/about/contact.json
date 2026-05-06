@@ -1,0 +1,14 @@
+[
+  {
+    "icon": "✉️",
+    "label": "774272440@qq.com",
+    "href": "mailto:774272440@qq.com",
+    "external": false
+  },
+  {
+    "icon": "💻",
+    "label": "GitHub / leeson1",
+    "href": "https://github.com/leeson1",
+    "external": true
+  }
+]
