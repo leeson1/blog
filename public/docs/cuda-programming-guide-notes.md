@@ -514,7 +514,6 @@ __global__ void nestedHelloWorld(int iSize, int iDepth) {
     int nthreads = iSize >> 1;
     if (tid == 0 && nthreads > 0) {
         nestedHelloWorld<<<1, nthreads>>>(nthreads, ++iDepth);
-        cudaDeviceSynchronize();         // 父等子完成
         printf("------> nested execution depth: %d\n", iDepth);
     }
 }
