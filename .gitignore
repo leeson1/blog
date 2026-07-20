@@ -10,8 +10,11 @@ backend/compile_commands.json
 # OS
 .DS_Store
 
-# Claude
+# AI
 CLAUDE.md
+AGENTS.md
+
+# Output
 node_modules/
 dist/
 
