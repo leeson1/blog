@@ -187,7 +187,7 @@ export function ArticleDetail() {
                 <ArrowLeft className="h-4 w-4" />
                 返回列表
               </Link>
-              <span className="text-xs text-gray-300 dark:text-gray-600">Jason Li · Blog</span>
+              <span className="text-xs text-gray-300 dark:text-gray-600">Leeson · Blog</span>
             </div>
           </>
         )}

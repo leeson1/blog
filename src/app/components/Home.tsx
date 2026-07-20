@@ -54,7 +54,7 @@ export function Home() {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-4xl tracking-tight text-gray-900 dark:text-gray-100">Jason Li</h1>
+            <h1 className="text-4xl tracking-tight text-gray-900 dark:text-gray-100">Leeson</h1>
             <div className="home-intro text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
             </div>
