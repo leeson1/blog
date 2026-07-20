@@ -1,5 +1,12 @@
 [
   {
+    "id": "ssh-terminal-terminfo-troubleshooting",
+    "tag": "Shell",
+    "tags": ["shell", "ssh", "terminal"],
+    "title": "SSH 下终端显示异常：一次 terminfo 问题排查",
+    "date": "2026.07.20"
+  },
+  {
     "id": "cuda-programming-guide-notes",
     "tag": "C++",
     "tags": ["cpp"],
