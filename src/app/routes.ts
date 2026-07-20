@@ -1,12 +1,32 @@
 import { createHashRouter } from "react-router";
-import { Home } from "./components/Home";
-import { Articles } from "./components/Articles";
-import { About } from "./components/About";
-import { ArticleDetail } from "./components/ArticleDetail";
 
 export const router = createHashRouter([
-  { path: "/", Component: Home },
-  { path: "/articles", Component: Articles },
-  { path: "/articles/:id", Component: ArticleDetail },
-  { path: "/about", Component: About },
+  {
+    path: "/",
+    lazy: async () => {
+      const { Home } = await import("./components/Home");
+      return { Component: Home };
+    },
+  },
+  {
+    path: "/articles",
+    lazy: async () => {
+      const { Articles } = await import("./components/Articles");
+      return { Component: Articles };
+    },
+  },
+  {
+    path: "/articles/:id",
+    lazy: async () => {
+      const { ArticleDetail } = await import("./components/ArticleDetail");
+      return { Component: ArticleDetail };
+    },
+  },
+  {
+    path: "/about",
+    lazy: async () => {
+      const { About } = await import("./components/About");
+      return { Component: About };
+    },
+  },
 ]);

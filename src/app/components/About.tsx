@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { SiteShell } from "./SiteShell";
 
 interface ExperienceItem {
   year: string;
@@ -49,86 +50,87 @@ export function About() {
   }, []);
 
   return (
-    <div id="about" className="min-h-screen dark:bg-gray-950">
-      <div className="max-w-2xl mx-auto px-8 py-16">
-        {/* 返回按钮 */}
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mb-12 text-sm"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          返回首页
-        </Link>
+    <SiteShell>
+      <div id="about" className="site-container page-wrap about-page">
+        <header className="page-heading about-heading">
+          <div>
+            <p className="eyebrow">ABOUT / PROFILE</p>
+            <h1>关于我</h1>
+          </div>
+          <p>写代码，也记录代码背后的判断。</p>
+        </header>
 
-        <div className="space-y-10">
-          <h1 className="text-3xl text-gray-900 dark:text-gray-100">关于我</h1>
+        <section className="about-overview">
+          <div className="about-portrait">
+            <img src={import.meta.env.BASE_URL + 'assets/avatar.jpg'} alt="Leeson 的头像" />
+            <span>Leeson · Backend Engineer</span>
+          </div>
 
-          {/* 简介 */}
-          <div className="about-intro space-y-4 text-gray-600 dark:text-gray-400 leading-relaxed">
+          <div className="about-intro">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                strong: ({ children }) => (
-                  <strong className="text-gray-900 dark:text-gray-100">{children}</strong>
-                ),
+                strong: ({ children }) => <strong>{children}</strong>,
               }}
             >{intro}</ReactMarkdown>
           </div>
+        </section>
 
-          {/* 技术栈 */}
+        <div className="about-details">
           {skills.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-lg text-gray-900 dark:text-gray-100">技术栈</h2>
-              <div className="flex flex-wrap gap-2">
+            <section className="about-section">
+              <p className="eyebrow">TOOLBOX</p>
+              <h2>技术栈</h2>
+              <div className="skills-list">
                 {skills.map(s => (
-                  <span key={s} className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{s}</span>
+                  <span key={s}>{s}</span>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* 经历 */}
           {experience.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-lg text-gray-900 dark:text-gray-100">经历</h2>
-              <div className="space-y-4">
+            <section className="about-section experience-section">
+              <p className="eyebrow">EXPERIENCE</p>
+              <h2>经历</h2>
+              <div className="experience-list">
                 {experience.map((item, i) => (
-                  <div key={i} className="flex gap-4">
-                    <div className="flex flex-col items-center pt-1">
-                      <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
-                      {i < experience.length - 1 && <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700 mt-1" />}
-                    </div>
-                    <div className="pb-4">
-                      <div className="text-xs text-gray-400 dark:text-gray-500">{item.year}</div>
-                      <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{item.role}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{item.desc}</div>
+                  <div key={i} className="experience-item">
+                    <div className="experience-year">{item.year}</div>
+                    <div>
+                      <h3>{item.role}</h3>
+                      <p>{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* 联系 */}
-          {contacts.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
-              <h2 className="text-lg text-gray-900 dark:text-gray-100">联系</h2>
-              <div className="space-y-2">
-                {contacts.map(c => (
-                  <a
-                    key={c.href}
-                    href={c.href}
-                    {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                  >
-                    {c.icon} {c.label}
-                  </a>
-                ))}
-              </div>
-            </div>
+            </section>
           )}
         </div>
+
+        {contacts.length > 0 && (
+          <section className="contact-section">
+            <div>
+              <p className="eyebrow">CONTACT</p>
+              <h2>保持联系</h2>
+            </div>
+            <div className="contact-links">
+              {contacts.map(contact => (
+                <a
+                  key={contact.href}
+                  href={contact.href}
+                  {...(contact.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  <span>{contact.label}</span>
+                  <ArrowUpRight aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <Link to="/" className="text-link about-back">返回首页</Link>
       </div>
-    </div>
+    </SiteShell>
   );
 }

@@ -17,6 +17,7 @@ AGENTS.md
 # Output
 node_modules/
 dist/
+graphify-out/
 
 # Test
 test/

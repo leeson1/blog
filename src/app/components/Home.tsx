@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Search } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Input } from "./ui/input";
-import { useTheme } from "../App";
+import { SiteShell } from "./SiteShell";
 
 interface Post {
   id: string;
@@ -18,7 +17,6 @@ export function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [intro, setIntro] = useState('');
   const [searchTerm, setSearchTerm] = useState("");
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const t = Date.now();
@@ -40,120 +38,90 @@ export function Home() {
   );
 
   return (
-    <div id="home" className="flex h-screen">
-      {/* 左侧固定面板 */}
-      <div className="w-2/5 bg-[#fafafa] dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex items-center justify-center p-12 fixed left-0 top-0 h-screen overflow-y-auto">
-        <div className="max-w-xs w-full space-y-8">
-          {/* 头像 */}
-          <div className="home-avatar">
-            <img
-              src={import.meta.env.BASE_URL + 'assets/avatar.jpg'}
-              alt="avatar"
-              className="w-16 h-16 rounded-full object-cover"
-            />
-          </div>
+    <SiteShell>
+      <div id="home" className="site-container">
+        <section className="home-hero">
+          <p className="eyebrow">BACKEND ENGINEER · PERSONAL NOTES</p>
+          <div className="home-hero-grid">
+            <div>
+              <h1>把复杂的系统，<br />写成清晰的笔记。</h1>
+              <div className="home-intro">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
+              </div>
+              <div className="hero-actions">
+                <Link id="nav-articles" to="/articles" className="text-link">
+                  浏览全部文章 <ArrowUpRight aria-hidden="true" />
+                </Link>
+                <Link id="nav-about" to="/about" className="text-link text-link-muted">
+                  了解更多
+                </Link>
+                <Link id="nav-home" to="/" className="sr-only">首页</Link>
+              </div>
+            </div>
 
-          <div className="space-y-2">
-            <h1 className="text-4xl tracking-tight text-gray-900 dark:text-gray-100">Leeson</h1>
-            <div className="home-intro text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
+            <aside className="profile-note" aria-label="作者简介">
+              <img
+                src={import.meta.env.BASE_URL + 'assets/avatar.jpg'}
+                alt="Leeson 的头像"
+                className="home-avatar"
+              />
+              <div>
+                <strong>Leeson</strong>
+                <span>Go / C++ 后端工程师</span>
+              </div>
+              <p>关注游戏服务器架构、视频处理与高性能计算。</p>
+            </aside>
+          </div>
+        </section>
+
+        <section className="writing-section" aria-labelledby="latest-writing">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">RECENT WRITING</p>
+              <h2 id="latest-writing">最近更新</h2>
+            </div>
+            <div className="search-field compact-search">
+              <Search aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="搜索文章"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                aria-label="搜索文章"
+              />
             </div>
           </div>
 
-          <nav className="space-y-1 pt-2">
-            <Link
-              id="nav-home"
-              to="/"
-              className="block text-gray-900 dark:text-gray-100 hover:text-gray-500 dark:hover:text-gray-400 transition-colors py-1.5 text-sm"
-            >
-              首页
-            </Link>
-            <Link
-              id="nav-articles"
-              to="/articles"
-              className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors py-1.5 text-sm"
-            >
-              文章
-            </Link>
-            <Link
-              id="nav-about"
-              to="/about"
-              className="block text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors py-1.5 text-sm"
-            >
-              关于我
-            </Link>
-          </nav>
-
-          {/* 主题切换 */}
-          <button
-            id="theme-toggle"
-            onClick={toggleTheme}
-            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            aria-label="切换主题"
-          >
-            {theme === 'light' ? '🌙 深色模式' : '☀️ 浅色模式'}
-          </button>
-        </div>
-      </div>
-
-      {/* 右侧滚动区域 */}
-      <div className="w-3/5 ml-[40%]">
-        <div className="max-w-2xl mx-auto px-12 py-16">
-          {/* 搜索框 */}
-          <div className="relative mb-10">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="搜索文章..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-transparent dark:border-transparent pl-10"
-            />
-          </div>
-
-          <div id="home-article-list" className="space-y-10">
+          <div id="home-article-list" className="article-list">
             {filtered.length > 0 ? (
-              filtered.map(post => (
-                <Link
-                  key={post.id}
-                  to={`/articles/${post.id}`}
-                  className="block group article-card"
-                >
-                  <article className="space-y-2">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <time className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
-                      <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
-
+              filtered.map((post, index) => (
+                <Link key={post.id} to={`/articles/${post.id}`} className="article-row">
+                  <span className="article-index">{String(index + 1).padStart(2, '0')}</span>
+                  <article>
+                    <div className="article-meta">
+                      <time>{post.date}</time>
+                      <span>{post.tag}</span>
                     </div>
-                    <h2 className="text-lg text-gray-900 dark:text-gray-100 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors leading-snug">
-                      {post.title}
-                    </h2>
+                    <h3>{post.title}</h3>
                   </article>
+                  <ArrowUpRight className="article-arrow" aria-hidden="true" />
                 </Link>
               ))
             ) : posts.length > 0 ? (
-              <div className="text-center py-16 text-gray-400 dark:text-gray-500 text-sm">
-                没有找到相关文章
-              </div>
+              <div className="empty-state">没有找到相关文章</div>
             ) : null}
           </div>
 
           {posts.length > 0 && (
-            <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <span id="articles-footer-count" className="text-xs text-gray-400 dark:text-gray-500">
-                共 {posts.length} 篇文章
-              </span>
-              <Link
-                id="btn-view-all"
-                to="/articles"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors"
-              >
-                查看全部文章 →
+            <div className="section-footer">
+              <span id="articles-footer-count">共 {posts.length} 篇文章</span>
+              <Link id="btn-view-all" to="/articles" className="text-link">
+                查看全部 <ArrowUpRight aria-hidden="true" />
               </Link>
             </div>
           )}
-        </div>
+        </section>
       </div>
-    </div>
+    </SiteShell>
   );
 }

@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/atom-one-dark.css";
-import { useTheme } from "../App";
+import { SiteShell } from "./SiteShell";
 
 interface Post {
   id: string;
@@ -50,7 +50,6 @@ export function ArticleDetail() {
   const [post, setPost] = useState<Post | null>(null);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
-  const { theme } = useTheme();
   const commentsRef = useRef<HTMLDivElement>(null);
 
   const wordCount = useMemo(() => {
@@ -100,39 +99,34 @@ export function ArticleDetail() {
     script.src = 'https://utteranc.es/client.js';
     script.setAttribute('repo', 'leeson1/blog');
     script.setAttribute('issue-term', 'title');
-    script.setAttribute('theme', theme === 'dark' ? 'github-dark' : 'github-light');
+    script.setAttribute('theme', 'github-light');
     script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
     commentsRef.current.appendChild(script);
-  }, [loading, theme, id]);
+  }, [loading, id]);
 
   return (
-    <div id="article-detail" className="min-h-screen bg-[#fafafa] dark:bg-gray-900">
-      <article className="max-w-2xl mx-auto px-8 py-16">
-        {/* 返回文章列表 */}
-        <Link
-          id="detail-back"
-          to="/articles"
-          className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mb-12 text-sm"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          返回文章列表
+    <SiteShell>
+      <article id="article-detail" className="article-page">
+        <Link id="detail-back" to="/articles" className="back-link">
+          <ArrowLeft aria-hidden="true" />
+          所有文章
         </Link>
 
         {post && (
-          <header className="mb-12 space-y-3">
-            <div className="flex items-center gap-3 flex-wrap">
-              <span id="d-tag" className="text-xs px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">{post.tag}</span>
-              <time id="d-date" className="text-sm text-gray-400 dark:text-gray-500">{post.date}</time>
-
+          <header className="article-header">
+            <div className="article-header-meta">
+              <span id="d-tag">{post.tag}</span>
+              <time id="d-date">{post.date}</time>
             </div>
-            <h1 id="d-title" className="text-3xl text-gray-900 dark:text-gray-100 leading-tight">{post.title}</h1>
+            <h1 id="d-title">{post.title}</h1>
+            <div className="article-header-rule" />
           </header>
         )}
 
         <div id="d-body" className="md-content">
           {loading ? (
-            <p className="text-gray-400 dark:text-gray-500 text-sm">加载中…</p>
+            <p className="loading-copy">正在整理文字…</p>
           ) : content ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
@@ -161,37 +155,38 @@ export function ArticleDetail() {
               }}
             >{content}</ReactMarkdown>
           ) : (
-            <p className="text-gray-400 dark:text-gray-500 text-sm">文章加载失败，请刷新重试。</p>
+            <p className="loading-copy">文章加载失败，请刷新重试。</p>
           )}
         </div>
 
         {!loading && content && (
-          <div className="mt-8 text-xs text-gray-400 dark:text-gray-500 text-right">
+          <div className="article-word-count">
             全文约 {wordCount.toLocaleString()} 字
           </div>
         )}
 
         {!loading && (
           <>
-            <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-4">评论</h3>
+            <section className="comments-section">
+              <p className="eyebrow">DISCUSSION</p>
+              <h2>评论</h2>
               <div ref={commentsRef}></div>
-            </div>
+            </section>
 
-            <div className="mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+            <div className="article-footer">
               <Link
                 id="detail-footer-back"
                 to="/articles"
-                className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors text-sm"
+                className="back-link"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft aria-hidden="true" />
                 返回列表
               </Link>
-              <span className="text-xs text-gray-300 dark:text-gray-600">Leeson · Blog</span>
+              <span>Leeson / Notes</span>
             </div>
           </>
         )}
       </article>
-    </div>
+    </SiteShell>
   );
 }
