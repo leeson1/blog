@@ -107,7 +107,7 @@ export function Home() {
               placeholder="搜索文章..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="border-transparent dark:border-transparent pl-10"
             />
           </div>
 
