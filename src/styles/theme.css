@@ -200,6 +200,11 @@ img {
   line-height: 1.08;
 }
 
+.home-hero-title-line {
+  display: inline-block;
+  margin-left: 0.8em;
+}
+
 .home-intro {
   max-width: 620px;
   margin-top: 34px;
@@ -1017,6 +1022,10 @@ img {
 
   .home-hero h1 {
     font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+
+  .home-hero-title-line {
+    margin-left: 0.35em;
   }
 
   .profile-note {

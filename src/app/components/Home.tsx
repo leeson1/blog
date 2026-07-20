@@ -44,7 +44,7 @@ export function Home() {
           <p className="eyebrow">BACKEND ENGINEER · PERSONAL NOTES</p>
           <div className="home-hero-grid">
             <div>
-              <h1>写点东西，<br />留给以后。</h1>
+              <h1>写点东西，<br /><span className="home-hero-title-line">留给以后。</span></h1>
               <div className="home-intro">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{intro}</ReactMarkdown>
               </div>
